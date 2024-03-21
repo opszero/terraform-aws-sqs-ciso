@@ -5,7 +5,7 @@ provider "aws" {
 module "sqs_queues" {
   source = "./../"
   tags = {
-    Env =  "Prod"
+    Env = "Prod"
   }
 
 

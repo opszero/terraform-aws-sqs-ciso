@@ -2,7 +2,7 @@ locals {
   policies = { for k, q in var.queues : k => jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
+      Effect    = "Allow",
       Principal = { AWS = "*" },
       Action = [
         "sqs:ChangeMessageVisibility",
@@ -15,7 +15,7 @@ locals {
       ],
       Resource = aws_sqs_queue.main[k].arn
     }]
-  })}
+  }) }
   tags = var.tags
 
 }
@@ -49,14 +49,14 @@ resource "aws_sqs_queue" "dlq" {
 
 
 resource "aws_sqs_queue_policy" "main_policy" {
-  for_each  = aws_sqs_queue.main
+  for_each = aws_sqs_queue.main
 
   queue_url = each.value.id
   policy    = local.policies[each.key]
 }
 
 resource "aws_sqs_queue_policy" "dlq_policy" {
-  for_each  = aws_sqs_queue.dlq
+  for_each = aws_sqs_queue.dlq
 
   queue_url = each.value.id
   policy    = local.policies[each.key]
