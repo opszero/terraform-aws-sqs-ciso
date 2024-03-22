@@ -1,24 +1,50 @@
 locals {
-  policies = { for k, q in var.queues : k => jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect    = "Allow",
-      Principal = { AWS = "*" },
-      Action = [
-        "sqs:ChangeMessageVisibility",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl",
-        "sqs:ReceiveMessage",
-        "sqs:SendMessage",
-        "sqs:PurgeQueue",
-      ],
-      Resource = aws_sqs_queue.main[k].arn
-    }]
-  }) }
+  policies = {
+  for k, q in var.queues : k => {
+    main_policy = jsonencode({
+      Version   = "2012-10-17",
+      Statement = [
+        {
+          Effect    = "Allow",
+          Principal = { AWS = "*" },
+          Action    = [
+            "sqs:ChangeMessageVisibility",
+            "sqs:DeleteMessage",
+            "sqs:GetQueueAttributes",
+            "sqs:GetQueueUrl",
+            "sqs:ReceiveMessage",
+            "sqs:SendMessage",
+            "sqs:PurgeQueue",
+          ],
+          Resource  = aws_sqs_queue.main[k].arn
+        }
+      ]
+    })
+    dlq_policy = jsonencode({
+      Version   = "2012-10-17",
+      Statement = [
+        {
+          Effect    = "Allow",
+          Principal = { AWS = "*" },
+          Action    = [
+            "sqs:ChangeMessageVisibility",
+            "sqs:DeleteMessage",
+            "sqs:GetQueueAttributes",
+            "sqs:GetQueueUrl",
+            "sqs:ReceiveMessage",
+            "sqs:SendMessage",
+            "sqs:PurgeQueue",
+          ],
+          Resource  = aws_sqs_queue.dlq[k].arn
+        }
+      ]
+    })
+  }
+  }
   tags = var.tags
-
 }
+
+
 
 
 resource "aws_sqs_queue" "main" {
@@ -49,15 +75,16 @@ resource "aws_sqs_queue" "dlq" {
 
 
 resource "aws_sqs_queue_policy" "main_policy" {
-  for_each = aws_sqs_queue.main
+  for_each = var.queues
 
-  queue_url = each.value.id
-  policy    = local.policies[each.key]
+  queue_url = aws_sqs_queue.main[each.key].id
+  policy    = local.policies[each.key].main_policy
 }
 
-resource "aws_sqs_queue_policy" "dlq_policy" {
-  for_each = aws_sqs_queue.dlq
 
-  queue_url = each.value.id
-  policy    = local.policies[each.key]
+resource "aws_sqs_queue_policy" "dlq_policy" {
+  for_each = var.queues
+
+  queue_url = aws_sqs_queue.dlq[each.key].id
+  policy    = local.policies[each.key].dlq_policy
 }
