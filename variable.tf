@@ -4,6 +4,4 @@ variable "queues" {
   default     = {}
 }
 
-
 variable "tags" {}
-

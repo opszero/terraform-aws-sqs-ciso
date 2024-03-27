@@ -48,7 +48,6 @@ locals {
 
 
 
-
 resource "aws_sqs_queue" "main" {
   for_each = var.queues
 
