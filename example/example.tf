@@ -2,7 +2,6 @@ provider "aws" {
   region = "ap-south-1"
 }
 
-
 module "sqs_queues" {
   source = "./../"
   tags = {

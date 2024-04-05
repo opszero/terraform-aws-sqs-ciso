@@ -46,7 +46,6 @@ resource "aws_cloudwatch_metric_alarm" "oldest_message_alarm_main" {
 
 }
 
-
 resource "aws_sqs_queue" "main" {
   for_each = var.queues
 
@@ -66,6 +65,6 @@ resource "aws_sqs_queue" "main" {
 resource "aws_sqs_queue_policy" "main_policy" {
   for_each = var.queues
 
-  queue_url = aws_sqs_queue.main[each.key].id
-  policy    = var.sqs_queue_policy == null ? local.policies[each.key].main_policy : var.sqs_queue_policy
+  queue_url  = aws_sqs_queue.main[each.key].id
+  policy     = try(each.value.sqs_queue_policy, local.policies[each.key].main_policy)
 }
