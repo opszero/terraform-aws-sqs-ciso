@@ -11,14 +11,29 @@
 -   Implementation Guidance
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_queues"></a> [queues](#input\_queues) | Map of queue names and their properties | `any` | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | n/a | `any` | n/a | yes |
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [aws_cloudwatch_metric_alarm.oldest_message_alarm_dlq](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_cloudwatch_metric_alarm.oldest_message_alarm_main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_sqs_queue.dlq](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_sqs_queue.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_sqs_queue_policy.dlq_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue_policy) | resource |
+| [aws_sqs_queue_policy.main_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue_policy) | resource |
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_sqs_dlq_details"></a> [sqs\_dlq\_details](#output\_sqs\_dlq\_details) | A map of SQS DLQ names to their details. |
+| <a name="output_sqs_queue_details"></a> [sqs\_queue\_details](#output\_sqs\_queue\_details) | A map of SQS queue names to their details. |
 <!-- END_TF_DOCS -->
