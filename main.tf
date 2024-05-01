@@ -68,3 +68,27 @@ resource "aws_sqs_queue_policy" "main_policy" {
   queue_url  = aws_sqs_queue.main[each.key].id
   policy     = try(each.value.sqs_queue_policy, local.policies[each.key].main_policy)
 }
+
+resource "aws_sns_topic" "this" {
+  for_each = var.queues
+
+  name                        = "${each.key}-sns-topic"
+  display_name                = "${each.key}-sns-topic"
+  kms_master_key_id           = try(each.value.kms_key_id, null)
+  delivery_policy             = try(each.value.delivery_policy, null)
+  fifo_topic                  = try(each.value.fifo_topic, null)
+  content_based_deduplication = try(each.value.content_based_deduplication, null)
+
+  tags = local.tags
+}
+
+resource "aws_sns_topic_subscription" "this" {
+  for_each =  var.queues
+
+  topic_arn              = aws_sns_topic.this[each.key].id
+  protocol               = try(each.value.protocol, "sqs")
+  endpoint               = try(each.value.endpoint, aws_sqs_queue.main[each.key].arn)
+  endpoint_auto_confirms = try(each.value.endpoint_auto_confirms, false)
+  raw_message_delivery   = try(each.value.raw_message_delivery, false)
+
+}
